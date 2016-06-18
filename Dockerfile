@@ -1,4 +1,4 @@
-FROM alpine:3.3
+FROM alpine:latest
 
 MAINTAINER Guillem CANAL <hello@guillem.ninja> 
 
@@ -9,32 +9,31 @@ COPY rootfs /
 
 ENV COMPOSER_HOME=/.composer 
 
-RUN apk add --update \
+RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
+    apk add --update \
     wget \
     ca-certificates \
     nginx \
-    php-fpm \
-    php-json \
-    php-zlib \
-    php-xml \
-    php-intl \
-    php-pdo \
-    php-phar \
-    php-openssl \
-    php-pdo_mysql \
-    php-mysqli \
-    php-gd \
-    php-iconv \
-    php-mcrypt \
-    php-dom \
-    php-ctype \
-    php-opcache \
-    php-curl \
+    php7-fpm@testing \
+    php7-json@testing \
+    php7-zlib@testing \
+    php7-xml@testing \
+    php7-intl@testing \
+    php7-pdo@testing \
+    php7-phar@testing \
+    php7-openssl@testing \
+    php7-pdo_mysql@testing \
+    php7-mysqli@testing \
+    php7-gd@testing \
+    php7-iconv@testing \
+    php7-mcrypt@testing \
+    php7-dom@testing \
+    php7-ctype@testing \
+    php7-opcache@testing \
+    php7-curl@testing \
+    php7-xdebug@testing \
+    php7-memcached@testing \
     bash \
-
-    # Install PHP extensions not available via apk
-
-    && build-php-extensions \
 
     # Install S6
 
@@ -49,7 +48,8 @@ RUN apk add --update \
     && rm -rf /tmp/* \
 
     # Install composer
-
+    && ln -s /usr/bin/php7 /usr/bin/php \
+    && ln -s /usr/sbin/php-fpm7 /usr/bin/php-fpm \
     && php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
     && php -r "if (hash_file('SHA384', 'composer-setup.php') === '070854512ef404f16bac87071a6db9fd9721da1684cd4589b1196c3faf71b9a2682e2311b36a5079825e155ac7ce150d') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
     && php composer-setup.php --install-dir=/sbin --filename=composer \
