@@ -1,4 +1,4 @@
-FROM alpine:3.3
+FROM alpine:3.4
 
 MAINTAINER Guillem CANAL <hello@guillem.ninja> 
 
@@ -13,23 +13,23 @@ RUN apk add --update \
     wget \
     ca-certificates \
     nginx \
-    php-fpm \
-    php-json \
-    php-zlib \
-    php-xml \
-    php-intl \
-    php-pdo \
-    php-phar \
-    php-openssl \
-    php-pdo_mysql \
-    php-mysqli \
-    php-gd \
-    php-iconv \
-    php-mcrypt \
-    php-dom \
-    php-ctype \
-    php-opcache \
-    php-curl \
+    php5-fpm \
+    php5-json \
+    php5-zlib \
+    php5-xml \
+    php5-intl \
+    php5-pdo \
+    php5-phar \
+    php5-openssl \
+    php5-pdo_mysql \
+    php5-mysqli \
+    php5-gd \
+    php5-iconv \
+    php5-mcrypt \
+    php5-dom \
+    php5-ctype \
+    php5-opcache \
+    php5-curl \
     bash \
 
     # Install PHP extensions not available via apk

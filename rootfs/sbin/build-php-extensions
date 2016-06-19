@@ -1,5 +1,5 @@
 #!/bin/sh
-apk add alpine-sdk php-dev autoconf zlib-dev pcre-dev
+apk add alpine-sdk php5-dev autoconf zlib-dev pcre-dev
 
 pecl_install ()
 {
@@ -17,7 +17,7 @@ pecl_install ()
   ./configure $CONFIGURE_ARGS
   make
   make install
-  echo "$EXT_TYPE=$NAME.so" >> /etc/php/conf.d/$NAME.ini
+  echo "$EXT_TYPE=$NAME.so" >> /etc/php5/conf.d/$NAME.ini
 }
 
 # Install PHP extensions
@@ -25,4 +25,4 @@ pecl_install extension apcu 4.0.10 --enable-apcu
 pecl_install zend_extension xdebug 2.3.3 --enable-xdebug
 
 # Cleanup
-apk del autoconf php-dev zlib-dev pcre-dev alpine-sdk
+apk del autoconf php5-dev zlib-dev pcre-dev alpine-sdk
