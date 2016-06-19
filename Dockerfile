@@ -15,6 +15,7 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
     ca-certificates \
     nginx \
     php7-fpm@testing \
+    php7-mbstring@testing \
     php7-json@testing \
     php7-zlib@testing \
     php7-xml@testing \
