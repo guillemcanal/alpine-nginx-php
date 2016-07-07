@@ -1,5 +1,9 @@
 #!/bin/sh
-apk add alpine-sdk php-dev autoconf zlib-dev pcre-dev
+set -e
+
+PHP_BUILD_DEPS="re2c alpine-sdk php5-dev autoconf zlib-dev pcre-dev openssl-dev"
+
+apk add $PHP_BUILD_DEPS
 
 pecl_install ()
 {
@@ -10,19 +14,19 @@ pecl_install ()
   local PECL_URL="https://pecl.php.net/get/$NAME-$VERSION.tgz"
 
   cd /tmp
-  curl $PECL_URL -O
+  wget $PECL_URL
   tar xzf $NAME-$VERSION.tgz
   cd /tmp/$NAME-$VERSION
   phpize
   ./configure $CONFIGURE_ARGS
   make
   make install
-  echo "$EXT_TYPE=$NAME.so" >> /etc/php/conf.d/$NAME.ini
+  echo "$EXT_TYPE=$NAME.so" >> /etc/php5/conf.d/$NAME.ini
 }
 
 # Install PHP extensions
-pecl_install extension apcu 4.0.10 --enable-apcu
+pecl_install extension mongo 1.6.14
 pecl_install zend_extension xdebug 2.3.3 --enable-xdebug
 
 # Cleanup
-apk del autoconf php-dev zlib-dev pcre-dev alpine-sdk
+apk del $PHP_BUILD_DEPS

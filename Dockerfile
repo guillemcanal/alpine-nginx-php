@@ -1,38 +1,37 @@
-FROM alpine:3.3
+FROM alpine:3.4
 
 MAINTAINER Guillem CANAL <hello@guillem.ninja> 
 
 ENV S6VERSION 1.17.2.0
+ENV COMPOSER_HOME=/.composer
+ENV PATH=/.composer/vendor/bin:$PATH
 
-# Copy configuration files to root
 COPY rootfs /
-
-ENV COMPOSER_HOME=/.composer 
 
 RUN apk add --update \
     wget \
     ca-certificates \
+    openssh \
     nginx \
-    php-fpm \
-    php-json \
-    php-zlib \
-    php-xml \
-    php-intl \
-    php-pdo \
-    php-phar \
-    php-openssl \
-    php-pdo_mysql \
-    php-mysqli \
-    php-gd \
-    php-iconv \
-    php-mcrypt \
-    php-dom \
-    php-ctype \
-    php-opcache \
-    php-curl \
+    php5-fpm \
+    php5-json \
+    php5-zlib \
+    php5-xml \
+    php5-intl \
+    php5-phar \
+    php5-openssl \
+    php5-imagick \
+    php5-iconv \
+    php5-mcrypt \
+    php5-dom \
+    php5-ctype \
+    php5-opcache \
+    php5-memcache \
+    php5-curl \
     bash \
+    git \
 
-    # Install PHP extensions not available via apk
+    # Build extensions
 
     && build-php-extensions \
 
@@ -51,7 +50,6 @@ RUN apk add --update \
     # Install composer
 
     && php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
-    && php -r "if (hash_file('SHA384', 'composer-setup.php') === '070854512ef404f16bac87071a6db9fd9721da1684cd4589b1196c3faf71b9a2682e2311b36a5079825e155ac7ce150d') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
     && php composer-setup.php --install-dir=/sbin --filename=composer \
     && php -r "unlink('composer-setup.php');" \
 
@@ -59,6 +57,12 @@ RUN apk add --update \
 
     && composer global require friendsofphp/php-cs-fixer \
     && composer global require phing/phing \
+    && composer global require sensiolabs/security-checker \
+    && rm -r $COMPOSER_HOME/cache \
+
+    # SSH 
+
+    && echo -e "Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile=/dev/null\n" > /etc/ssh/ssh_config \
 
     # Fix permissions
 
