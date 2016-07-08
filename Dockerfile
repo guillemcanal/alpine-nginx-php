@@ -8,7 +8,8 @@ ENV PATH=/.composer/vendor/bin:$PATH
 
 COPY rootfs /
 
-RUN apk add --update \
+RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
+    && apk add --update \
     wget \
     ca-certificates \
     openssh \
@@ -33,6 +34,7 @@ RUN apk add --update \
     su-exec \
     bash \
     git \
+    shadow@testing \
 
     # Build extensions
 

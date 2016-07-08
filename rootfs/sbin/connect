@@ -1,27 +1,9 @@
 #!/bin/bash
+#
 
-USERNAME="user-$1"
-
-echo "checking $USERNAME"
+usermod -u $(stat -c '%u' /var/www) nginx
+groupmod -g $(stat -c '%g' /var/www) www-data
 
 umask 0002
 
-if test -d /var/www/var;then
-   echo "detected Symfony 3.x, applying permissions on ./var"
-   chmod 770 -R /var/www/var
-else
-   echo "detected Symfony 2.x, applying permissions on ./app/{cache,logs}"
-   mkdir -p /var/www/app/{cache,logs}
-   chmod 770 -R /var/www/app/{cache,logs}
-fi
-
-if getent passwd $USERNAME > /dev/null 2>&1; then
-	echo "user $USERNAME already exist"
-else
-	echo "creating user $USERNAME"
-	adduser -u $1 -D -S -G www-data $USERNAME
-fi
-
-
-
-su-exec $USERNAME:www-data bash
+su-exec nginx:www-data bash
