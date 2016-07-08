@@ -16,6 +16,8 @@ RUN apk add --update \
     php5-fpm \
     php5-json \
     php5-zlib \
+    php5-bz2 \
+    php5-bcmath \
     php5-xml \
     php5-intl \
     php5-phar \
@@ -28,6 +30,7 @@ RUN apk add --update \
     php5-opcache \
     php5-memcache \
     php5-curl \
+    su-exec \
     bash \
     git \
 
