@@ -2,9 +2,18 @@
 
 USERNAME="user-$1"
 
-echo "Checking $USERNAME"
+echo "checking $USERNAME"
 
 umask 0002
+
+if test -d /var/www/var;then
+   echo "detected Symfony 3.x, applying permissions on ./var"
+   chmod 770 -R /var/www/var
+else
+   echo "detected Symfony 2.x, applying permissions on ./app/{cache,logs}"
+   mkdir -p /var/www/app/{cache,logs}
+   chmod 770 -R /var/www/app/{cache,logs}
+fi
 
 if getent passwd $USERNAME > /dev/null 2>&1; then
 	echo "user $USERNAME already exist"
@@ -12,5 +21,7 @@ else
 	echo "creating user $USERNAME"
 	adduser -u $1 -D -S -G www-data $USERNAME
 fi
+
+
 
 su-exec $USERNAME:www-data bash
