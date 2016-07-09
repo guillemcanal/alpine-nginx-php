@@ -1,5 +1,12 @@
 #!/usr/bin/with-contenv sh
 umask 0002
-usermod -u $(stat -c '%u' /var/www) nginx
-groupmod -g $(stat -c '%g' /var/www) www-data
+
+www_dir=/var/www
+
+if [ `stat -fc%t:%T "$www_dir"` != `stat -fc%t:%T "$www_dir/.."` ]; then
+    echo "$www_dir is mounted, applying usermod & groupmod"
+    usermod -u $(stat -c '%u' $www_dir) nginx
+	groupmod -g $(stat -c '%g' $www_dir) www-data
+fi
+
 exec php-fpm --nodaemonize;
