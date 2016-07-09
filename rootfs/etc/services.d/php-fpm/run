@@ -1,3 +1,5 @@
 #!/usr/bin/with-contenv sh
 umask 0002
+usermod -u $(stat -c '%u' /var/www) nginx
+groupmod -g $(stat -c '%g' /var/www) www-data
 exec php-fpm --nodaemonize;
