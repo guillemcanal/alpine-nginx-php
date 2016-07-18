@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+usermod -u $(stat -c '%u' /var/www) nginx || true
+groupmod -g $(stat -c '%g' /var/www) www-data || true

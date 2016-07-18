@@ -1,9 +1,0 @@
-#!/bin/bash
-#
-
-usermod -u $(stat -c '%u' /var/www) nginx
-groupmod -g $(stat -c '%g' /var/www) www-data
-
-umask 0002
-
-su-exec nginx:www-data bash

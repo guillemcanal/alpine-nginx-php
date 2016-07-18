@@ -3,7 +3,6 @@ FROM alpine:3.4
 MAINTAINER Guillem CANAL <hello@guillem.ninja> 
 
 ENV S6VERSION 1.17.2.0
-ENV COMPOSER_HOME=/.composer
 ENV PATH=/.composer/vendor/bin:$PATH
 
 COPY rootfs /
@@ -36,9 +35,16 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
     git \
     shadow@testing \
 
+    # Modify nginx user
+
+    && touch /var/lib/nginx/.bashrc \
+    && echo "umask 0002" >> /var/lib/nginx/.bashrc \
+    && mkdir /var/lib/nginx/.composer \
+    && chown nginx:nginx -R /var/lib/nginx \
+
     # Build extensions
 
-    && build-php-extensions \
+    && build-php-extensions || true \
 
     # Install S6
 
@@ -63,7 +69,6 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
     && composer global require friendsofphp/php-cs-fixer \
     && composer global require phing/phing \
     && composer global require sensiolabs/security-checker \
-    && rm -r $COMPOSER_HOME/cache \
 
     # SSH 
 
@@ -71,8 +76,7 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
 
     # Fix permissions
 
-    && rm -r /var/www/localhost \
-    && chown -Rf nginx:www-data /var/www/ /.composer
+    && rm -r /var/www/localhost
 
 # Set working directory
 WORKDIR /var/www

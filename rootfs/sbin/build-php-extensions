@@ -1,9 +1,22 @@
 #!/bin/sh
 set -e
 
-PHP_BUILD_DEPS="re2c alpine-sdk php5-dev autoconf zlib-dev pcre-dev openssl-dev"
+PHP_BUILD_DEPS="re2c alpine-sdk php5-dev autoconf zlib-dev pcre-dev openssl-dev tidyhtml-dev@testing"
 
 apk add $PHP_BUILD_DEPS
+
+apply_patches ()
+{
+  if [ -d "/patches/$1" ]; then
+    echo "patch directory /patches/$1 found"
+    for patch_file in /patches/$1/*; do
+      file_to_patch=`basename "$patch_file"`
+      patch /tmp/$1-$2/$file_to_patch $patch_file
+    done
+  else
+    echo "no patch directory /patches/$1 found"
+  fi
+}
 
 pecl_install ()
 {
@@ -15,8 +28,9 @@ pecl_install ()
 
   cd /tmp
   wget $PECL_URL
-  tar xzf $NAME-$VERSION.tgz
+  tar xzf $NAME-$VERSION.tgz || true
   cd /tmp/$NAME-$VERSION
+  apply_patches $NAME $VERSION
   phpize
   ./configure $CONFIGURE_ARGS
   make
@@ -25,6 +39,7 @@ pecl_install ()
 }
 
 # Install PHP extensions
+pecl_install extension tidy 1.2
 pecl_install extension mongo 1.6.14
 pecl_install zend_extension xdebug 2.3.3 --enable-xdebug
 
