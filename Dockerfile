@@ -44,19 +44,13 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
 
     # Build extensions
 
-    && build-php-extensions || true \
+    && build-php-extensions \
 
     # Install S6
 
-    && wget https://github.com/just-containers/s6-overlay/releases/download/v${S6VERSION}/s6-overlay-amd64.tar.gz --no-check-certificate -O /tmp/s6-overlay.tar.gz \
+    && wget https://github.com/just-containers/s6-overlay/releases/download/v${S6VERSION}/s6-overlay-amd64.tar.gz -O /tmp/s6-overlay.tar.gz \
     && tar xvfz /tmp/s6-overlay.tar.gz -C / \
     && rm -f /tmp/s6-overlay.tar.gz \
-
-    # Cleanup
-
-    && apk del wget \
-    && rm -rf /var/cache/apk/* \
-    && rm -rf /tmp/* \
 
     # Install composer
 
@@ -74,9 +68,14 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
 
     && echo -e "Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile=/dev/null\n" > /etc/ssh/ssh_config \
 
-    # Fix permissions
+    # Cleanup
 
-    && rm -r /var/www/localhost
+    && rm -r /var/www/localhost \
+    && apk del wget \
+    && rm -rf /var/cache/apk/* \
+    && rm -rf /tmp/* \
+    && rm -rf /usr/share/* \
+    && rm -rf /root/.composer/cache
 
 # Set working directory
 WORKDIR /var/www
