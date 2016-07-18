@@ -5,19 +5,6 @@ PHP_BUILD_DEPS="re2c alpine-sdk php5-dev autoconf zlib-dev pcre-dev openssl-dev 
 
 apk add $PHP_BUILD_DEPS
 
-apply_patches ()
-{
-  if [ -d "/patches/$1" ]; then
-    echo "patch directory /patches/$1 found"
-    for patch_file in /patches/$1/*; do
-      file_to_patch=`basename "$patch_file"`
-      patch /tmp/$1-$2/$file_to_patch $patch_file
-    done
-  else
-    echo "no patch directory /patches/$1 found"
-  fi
-}
-
 pecl_install ()
 {
   local EXT_TYPE=$1
@@ -39,9 +26,19 @@ pecl_install ()
 }
 
 # Install PHP extensions
-pecl_install extension tidy 1.2
 pecl_install extension mongo 1.6.14
 pecl_install zend_extension xdebug 2.3.3 --enable-xdebug
+
+# Install Tidy :(
+cd /tmp
+wget http://php.net/distributions/php-5.6.23.tar.gz
+tar xzf php-5.6.23.tar.gz
+cd php-5.6.23/ext/tidy
+sed -i 's/buffio.h/tidybuffio.h/' *.c
+phpize
+./configure
+make
+make install
 
 # Cleanup
 apk del $PHP_BUILD_DEPS
