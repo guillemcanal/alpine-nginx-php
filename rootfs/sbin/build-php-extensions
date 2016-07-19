@@ -27,6 +27,7 @@ pecl_install ()
 pecl_install extension mongo 1.6.14
 pecl_install zend_extension xdebug 2.3.3 --enable-xdebug
 
+
 # Install Tidy from source :(
 cd /tmp
 wget http://php.net/distributions/php-5.6.23.tar.gz
@@ -38,6 +39,20 @@ phpize
 make
 make install
 echo "extension=tidy.so" >> /etc/php5/conf.d/tidy.ini
+
+# Meminfo
+mkdir -p /opt
+cd /opt
+git clone https://github.com/BitOne/php-meminfo.git
+cd php-meminfo/extension
+phpize
+./configure
+make
+make install
+echo "extension=meminfo.so" >> /etc/php5/conf.d/meminfo.ini
+cd ../analyzer
+composer update
+ln -s /opt/php-meminfo/analyzer/bin/analyzer /sbin/analyzer
 
 # Cleanup
 rm -rf /tmp/*

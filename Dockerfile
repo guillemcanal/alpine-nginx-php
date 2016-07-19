@@ -42,6 +42,12 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
     && mkdir /var/lib/nginx/.composer \
     && chown nginx:nginx -R /var/lib/nginx \
 
+    # Install composer
+
+    && php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+    && php composer-setup.php --install-dir=/sbin --filename=composer \
+    && php -r "unlink('composer-setup.php');" \
+
     # Build extensions
 
     && build-php-extensions \
@@ -51,12 +57,6 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
     && wget https://github.com/just-containers/s6-overlay/releases/download/v${S6VERSION}/s6-overlay-amd64.tar.gz -O /tmp/s6-overlay.tar.gz \
     && tar xvfz /tmp/s6-overlay.tar.gz -C / \
     && rm -f /tmp/s6-overlay.tar.gz \
-
-    # Install composer
-
-    && php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
-    && php composer-setup.php --install-dir=/sbin --filename=composer \
-    && php -r "unlink('composer-setup.php');" \
 
     ## Install global PHP utilities
 
