@@ -1,8 +1,6 @@
 #!/bin/sh
 
-PHP_BUILD_DEPS="re2c alpine-sdk php5-dev autoconf zlib-dev pcre-dev openssl-dev tidyhtml-dev@testing"
-
-apk add $PHP_BUILD_DEPS
+apk add re2c alpine-sdk php5-dev autoconf imagemagick-dev libtool zlib-dev pcre-dev openssl-dev tidyhtml-dev@testing imagemagick tidyhtml-libs@testing
 
 pecl_install ()
 {
@@ -25,8 +23,8 @@ pecl_install ()
 
 # Install PHP extensions
 pecl_install extension mongo 1.6.14
+pecl_install extension imagick 3.4.3RC1 --prefix=/usr
 pecl_install zend_extension xdebug 2.3.3 --enable-xdebug
-
 
 # Install Tidy from source :(
 cd /tmp
@@ -56,4 +54,4 @@ ln -s /opt/php-meminfo/analyzer/bin/analyzer /sbin/analyzer
 
 # Cleanup
 rm -rf /tmp/*
-apk del re2c alpine-sdk php5-dev autoconf zlib-dev pcre-dev openssl-dev
+apk del re2c alpine-sdk php5-dev autoconf imagemagick-dev libtool zlib-dev pcre-dev openssl-dev tidyhtml-dev
