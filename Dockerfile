@@ -34,6 +34,19 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
     git \
     shadow@testing \
 
+    # Configure SSHD server
+
+    && ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N '' -t rsa \
+    && sed -i "s/UsePrivilegeSeparation.*/UsePrivilegeSeparation no/g" /etc/ssh/sshd_config \
+    && sed -i "s/UsePAM.*/UsePAM no/g" /etc/ssh/sshd_config \
+    && sed -i "s/PermitRootLogin.*/PermitRootLogin yes/g" /etc/ssh/sshd_config \
+    && sed -i "s/#AuthorizedKeysFile/AuthorizedKeysFile/g" /etc/ssh/sshd_config \
+    && mkdir /root/.ssh \
+    && ssh-keygen -t rsa -N "" -f /root/.ssh/id_rsa \
+    && cp /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys \
+    && chmod 700 /root/.ssh \
+    && chmod 600 /root/.ssh/authorized_keys \
+
     # Modify nginx user
 
     && touch /var/lib/nginx/.bashrc \
@@ -76,10 +89,12 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
     && rm -rf /usr/share/* \
     && rm -rf /root/.composer/cache
 
+RUN echo -e "\n[XDebug]\nxdebug.idekey=\"phpstorm\"\nxdebug.remote_enable=On\nxdebug.remote_autostart=Off" >> /etc/php5/conf.d/xdebug.ini
+
 # Set working directory
 WORKDIR /var/www
 
 # Expose the ports for nginx
-EXPOSE 80 443
+EXPOSE 80 443 22 9000
 
 ENTRYPOINT [ "/init" ]
