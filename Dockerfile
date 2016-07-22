@@ -14,6 +14,8 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
     openssh \
     nginx \
     php5-fpm \
+    php5-gd \
+    php5-exit \
     php5-json \
     php5-zlib \
     php5-bz2 \
@@ -22,7 +24,6 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
     php5-intl \
     php5-phar \
     php5-openssl \
-    php5-iconv \
     php5-mcrypt \
     php5-dom \
     php5-ctype \
@@ -89,7 +90,7 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
     && rm -rf /usr/share/* \
     && rm -rf /root/.composer/cache
 
-RUN echo -e "\n[XDebug]\nxdebug.idekey=\"phpstorm\"\nxdebug.remote_enable=On\nxdebug.remote_autostart=Off" >> /etc/php5/conf.d/xdebug.ini
+RUN echo -e "\n[XDebug]\nxdebug.idekey=\"phpstorm\"\nxdebug.remote_enable=On\nxdebug.remote_connect_back=On\nxdebug.remote_autostart=Off" >> /etc/php5/conf.d/xdebug.ini
 
 # Set working directory
 WORKDIR /var/www
