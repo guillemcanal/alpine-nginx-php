@@ -15,7 +15,7 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
     nginx \
     php5-fpm \
     php5-gd \
-    php5-exit \
+    php5-exif \
     php5-json \
     php5-zlib \
     php5-bz2 \
