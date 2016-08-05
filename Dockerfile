@@ -2,8 +2,9 @@ FROM alpine:edge
 
 MAINTAINER Guillem CANAL <hello@guillem.ninja> 
 
-ENV S6VERSION 1.17.2.0
-ENV PATH=/.composer/vendor/bin:$PATH
+ENV S6VERSION="1.17.2.0" \
+    PATH="/.composer/vendor/bin:$PATH" \
+    COMPOSER_HOME="/composer"
 
 COPY rootfs /
 
@@ -34,26 +35,25 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
     bash \
     git \
     shadow@testing \
+    
+    # Configure PHP
+
+    && echo "memory_limit=-1" >> /etc/php5/conf.d/docker.ini \
+    && echo "date.timezone=UTC" >> /etc/php5/conf.d/docker.ini \
+    && echo -e "\n[XDebug]\nxdebug.idekey=\"docker\"\nxdebug.remote_enable=On\nxdebug.remote_connect_back=On\nxdebug.remote_autostart=Off" >> /etc/php5/conf.d/docker.ini \
 
     # Configure SSHD server
 
     && ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N '' -t rsa \
-    && sed -i "s/UsePrivilegeSeparation.*/UsePrivilegeSeparation no/g" /etc/ssh/sshd_config \
-    && sed -i "s/UsePAM.*/UsePAM no/g" /etc/ssh/sshd_config \
-    && sed -i "s/PermitRootLogin.*/PermitRootLogin yes/g" /etc/ssh/sshd_config \
-    && sed -i "s/#AuthorizedKeysFile/AuthorizedKeysFile/g" /etc/ssh/sshd_config \
-    && mkdir /root/.ssh \
-    && ssh-keygen -t rsa -N "" -f /root/.ssh/id_rsa \
-    && cp /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys \
-    && chmod 700 /root/.ssh \
-    && chmod 600 /root/.ssh/authorized_keys \
+    && echo -e "Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile=/dev/null\n" > /etc/ssh/ssh_config \
 
     # Modify nginx user
 
     && touch /var/lib/nginx/.bashrc \
     && echo "umask 0002" >> /var/lib/nginx/.bashrc \
-    && mkdir /var/lib/nginx/.composer \
     && chown nginx:nginx -R /var/lib/nginx \
+    && echo "nginx:nginx" | chpasswd \
+    && usermod -s /bin/bash nginx \
 
     # Install composer
 
@@ -77,10 +77,6 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
     && composer global require phing/phing \
     && composer global require sensiolabs/security-checker \
 
-    # SSH 
-
-    && echo -e "Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile=/dev/null\n" > /etc/ssh/ssh_config \
-
     # Cleanup
 
     && rm -r /var/www/localhost \
@@ -89,8 +85,6 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
     && rm -rf /tmp/* \
     && rm -rf /usr/share/* \
     && rm -rf /root/.composer/cache
-
-RUN echo -e "\n[XDebug]\nxdebug.idekey=\"phpstorm\"\nxdebug.remote_enable=On\nxdebug.remote_connect_back=On\nxdebug.remote_autostart=Off" >> /etc/php5/conf.d/xdebug.ini
 
 # Set working directory
 WORKDIR /var/www
