@@ -1,6 +1,6 @@
 #!/bin/sh
 
-apk add re2c alpine-sdk php5-dev autoconf imagemagick-dev imagemagick
+apk add re2c alpine-sdk php5-dev autoconf libtool imagemagick-dev
 
 pecl_install ()
 {
@@ -22,22 +22,8 @@ pecl_install ()
 }
 
 # Install PHP extensions
-pecl_install extension imagick 3.4.3RC1 --prefix=/usr
-
-# Meminfo
-mkdir -p /opt
-cd /opt
-git clone https://github.com/BitOne/php-meminfo.git
-cd php-meminfo/extension
-phpize
-./configure
-make
-make install
-echo "extension=meminfo.so" >> /etc/php5/conf.d/meminfo.ini
-cd ../analyzer
-composer update
-ln -s /opt/php-meminfo/analyzer/bin/analyzer /sbin/analyzer
+pecl_install extension imagick 3.4.3RC1
 
 # Cleanup
 rm -rf /tmp/*
-apk del re2c alpine-sdk php5-dev autoconf imagemagick-dev
+apk del re2c alpine-sdk php5-dev autoconf libtool
