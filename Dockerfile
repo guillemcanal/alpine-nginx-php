@@ -110,13 +110,13 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
     && apk del wget build-base ruby-dev libffi-dev \
     && rm -rf /var/cache/apk/* \
     && rm -rf /tmp/* \
-    && rm -rf /usr/share/* \
+    # && rm -rf /usr/share/* \
     && rm -rf /root/.composer/cache \
 
 	# Install JAVA used to minify assets
 
 	&& apk upgrade --update && \
-    apk add --update libstdc++ curl ca-certificates bash && \
+    apk add --update libstdc++ curl bash && \
     for pkg in glibc-${GLIBC_VERSION} glibc-bin-${GLIBC_VERSION} glibc-i18n-${GLIBC_VERSION}; do curl -sSL https://github.com/andyshinn/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/${pkg}.apk -o /tmp/${pkg}.apk; done && \
     apk add --allow-untrusted /tmp/*.apk && \
     rm -v /tmp/*.apk && \
