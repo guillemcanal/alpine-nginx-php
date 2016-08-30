@@ -33,7 +33,7 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
     su-exec \
     bash \
     git \
-    shadow@testing \
+    acl \
 
     # Configure SSHD server
 
@@ -48,12 +48,10 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
     && chmod 700 /root/.ssh \
     && chmod 600 /root/.ssh/authorized_keys \
 
-    # Modify nginx user
-
-    && touch /var/lib/nginx/.bashrc \
-    && echo "umask 0002" >> /var/lib/nginx/.bashrc \
-    && mkdir /var/lib/nginx/.composer \
-    && chown nginx:nginx -R /var/lib/nginx \
+    # Create docker user
+    
+    && adduser -u 1000 -D -s /bin/ash docker \
+    && echo "docker:docker" | chpasswd \
 
     # Install composer
 
