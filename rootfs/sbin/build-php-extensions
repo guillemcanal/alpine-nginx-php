@@ -23,7 +23,7 @@ pecl_install ()
 
 # Install PHP extensions
 pecl_install extension mongo 1.6.14
-pecl_install extension imagick 3.4.3RC1 --prefix=/usr
+pecl_install extension imagick 3.4.3RC1
 pecl_install zend_extension xdebug 2.3.3 --enable-xdebug
 
 # Install Tidy from source :(
