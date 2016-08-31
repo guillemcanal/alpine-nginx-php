@@ -45,7 +45,8 @@ main() {
         tail -n +6 /etc/php5/pool.d/www.conf
     } >> "$tmp" &&
     cat "$tmp" > /etc/php5/pool.d/www.conf && rm "$tmp"
-
+    
+    chown $owner:$group_id -R /var/lib/nginx
 }
 
 ##
