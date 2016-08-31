@@ -13,7 +13,7 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
     ca-certificates \
     openssh \
     nginx \
-    php5-fpm \
+    php5-fpm \  
     php5-gd \
     php5-exif \
     php5-json \
@@ -33,7 +33,12 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
     su-exec \
     bash \
     git \
-    acl \
+
+    # Configure PHP
+
+    && echo "memory_limit=-1" >> /etc/php5/conf.d/docker.ini \
+    && echo "date.timezone=Europe/Paris" >> /etc/php5/conf.d/docker.ini \
+    && echo -e "\n[XDebug]\nxdebug.idekey=\"docker\"\nxdebug.remote_enable=On\nxdebug.remote_connect_back=On\nxdebug.remote_autostart=Off" >> /etc/php5/conf.d/docker.ini \
 
     # Configure SSHD server
 
@@ -81,17 +86,14 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
 
     # Cleanup
 
-    && rm -r /var/www/localhost \
+    && rm -r /var/www \
     && apk del wget \
     && rm -rf /var/cache/apk/* \
     && rm -rf /tmp/* \
     && rm -rf /usr/share/* \
     && rm -rf /root/.composer/cache
 
-RUN echo -e "\n[XDebug]\nxdebug.idekey=\"phpstorm\"\nxdebug.remote_enable=On\nxdebug.remote_connect_back=On\nxdebug.remote_autostart=Off" >> /etc/php5/conf.d/xdebug.ini
-
-# Set working directory
-WORKDIR /var/www
+VOLUME ["/var/www"]
 
 # Expose the ports for nginx
 EXPOSE 80 443 22 9000

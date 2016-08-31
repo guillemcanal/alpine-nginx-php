@@ -1,8 +1,0 @@
-#!/usr/bin/env sh
-
-OWNER_NAME=$(stat -c '%U' /var/www)
-if [ "$OWNER_NAME" -eq "docker" ]; then
-	echo "applying ACL"
-	setfacl -R -m u:nginx:rwX -m u:docker:rwX /var/www/app/cache /var/www/app/logs
-	setfacl -dR -m u:nginx:rwX -m u:docker:rwX /var/www/app/cache /var/www/app/logs
-fi
