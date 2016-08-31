@@ -100,7 +100,7 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
 
     # Cleanup
 
-    && rm -r /var/www/localhost \
+    && rm -r /var/www \
     && apk del wget build-base ruby-dev libffi-dev \
     && rm -rf /var/cache/apk/* \
     && rm -rf /tmp/* \
@@ -166,8 +166,7 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
            /tmp/* /var/cache/apk/* && \
     echo 'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4' >> /etc/nsswitch.conf
 
-# Set working directory
-WORKDIR /var/www
+VOLUME ["/var/www"]
 
 # Expose the ports for nginx
 EXPOSE 80 443 22 9000
