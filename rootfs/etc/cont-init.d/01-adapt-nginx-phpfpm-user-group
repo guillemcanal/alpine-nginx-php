@@ -1,0 +1,58 @@
+#!/bin/ash
+
+set -e
+
+main() {
+
+    if mount -t fuse.osxfs | grep /var/www > /dev/null; then
+        chown -R nginx:www-data /app 2> /dev/null
+        return
+    fi
+
+    local owner group owner_id group_id tmp
+    
+    owner=$(stat -c '%U' /var/www)
+    group=$(stat -c '%G' /var/www)
+    owner_id=$(stat -c '%u' /var/www)
+    group_id=$(stat -c '%g' /var/www)
+
+    if [[ $owner = UNKNOWN ]]; then
+        owner=$(randname)
+        if [[ $group = UNKNOWN ]]; then
+            group=$owner
+            addgroup -S -g "$group_id" "$group"
+        fi
+        adduser -S -u $owner_id -G $group_id "$owner"
+        echo "$owner:$owner" | chpasswd
+    fi
+
+    # configure nginx
+    tmp=/tmp/$RANDOM
+    {
+        echo "user $owner $group;"
+        tail -n +2 /etc/nginx/nginx.conf
+    } >> "$tmp" &&
+    cat "$tmp" > /etc/nginx/nginx.conf && rm "$tmp"
+
+    # configure php-fpm
+    tmp=/tmp/$RANDOM
+    {
+        echo "[www]"
+        echo "user = $owner"
+        echo "group = $group"
+        echo "listen.owner = $owner"
+        echo "listen.group = $group"
+        tail -n +6 /etc/php5/pool.d/www.conf
+    } >> "$tmp" &&
+    cat "$tmp" > /etc/php5/pool.d/www.conf && rm "$tmp"
+
+}
+
+##
+# Generate a random sixteen-character
+# string of alphabetical characters
+randname() {
+    tr -dc '[:lower:]' < /dev/urandom | dd count=1 bs=16 2>/dev/null
+}
+
+main

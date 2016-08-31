@@ -32,7 +32,6 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
     su-exec \
     bash \
     git \
-    shadow@testing \
     grep \
 
     # Install PHP
@@ -81,16 +80,11 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
 
     && ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N '' -t rsa \
     && echo -e "Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile=/dev/null\n" > /etc/ssh/ssh_config \
-
-    # Modify nginx user
-
-    && touch /var/lib/nginx/.bashrc \
-    && echo "umask 0002" >> /var/lib/nginx/.bashrc \
-    && chown nginx:nginx -R /var/lib/nginx \
-    && echo "nginx:nginx" | chpasswd \
-    && mkdir -p /home/nginx \
-    && chown nginx:nginx -R /home/nginx \
-    && usermod -s /bin/bash -d /home/nginx nginx \
+    
+    # Create docker user
+    
+    && adduser -u 1000 -D -s /bin/ash docker \
+    && echo "docker:docker" | chpasswd \
 
     # Install composer
 
