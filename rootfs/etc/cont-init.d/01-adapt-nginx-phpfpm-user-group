@@ -46,6 +46,7 @@ main() {
     } >> "$tmp" &&
     cat "$tmp" > /etc/php5/pool.d/www.conf && rm "$tmp"
 
+    chown $owner:$group_id -R /var/lib/nginx
 }
 
 ##
