@@ -2,6 +2,8 @@
 
 apk add re2c alpine-sdk php5-dev autoconf imagemagick-dev libtool zlib-dev pcre-dev openssl-dev tidyhtml-dev@testing imagemagick tidyhtml-libs@testing
 
+PHP_VERSION=$(php -r "print PHP_VERSION;")
+
 pecl_install ()
 {
   local EXT_TYPE=$1
@@ -21,16 +23,34 @@ pecl_install ()
   echo "$EXT_TYPE=$NAME.so" >> /etc/php5/conf.d/$NAME.ini
 }
 
-# Install PHP extensions
+# Install PHP extensions from PECL
+
 pecl_install extension mongo 1.6.14
 pecl_install extension imagick 3.4.3RC1
 pecl_install zend_extension xdebug 2.3.3 --enable-xdebug
 
-# Install Tidy from source :(
-cd /tmp
-wget http://php.net/distributions/php-5.6.23.tar.gz
-tar xzf php-5.6.23.tar.gz
-cd php-5.6.23/ext/tidy
+# Install GNU libiconv
+
+mkdir -p /opt
+cd /opt
+wget http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.14.tar.gz
+tar xzf libiconv-1.14.tar.gz
+cd libiconv-1.14
+sed -i 's/_GL_WARN_ON_USE (gets, "gets is a security hole - use fgets instead");/#if HAVE_RAW_DECL_GETS\n_GL_WARN_ON_USE (gets, "gets is a security hole - use fgets instead");\n#endif/g' srclib/stdio.in.h
+./configure --prefix=/usr/local
+make
+make install
+
+# Download PHP source
+
+mkdir -p /opt
+cd /opt
+wget http://php.net/distributions/php-$PHP_VERSION.tar.gz
+tar xzf php-$PHP_VERSION.tar.gz
+
+# Install Tidy from source
+
+cd /opt/php-$PHP_VERSION/ext/tidy
 sed -i 's/buffio.h/tidybuffio.h/' *.c
 phpize
 ./configure
@@ -38,8 +58,17 @@ make
 make install
 echo "extension=tidy.so" >> /etc/php5/conf.d/tidy.ini
 
+# Install PHP iconv from source
+
+cd /opt/php-$PHP_VERSION/ext/iconv
+phpize
+./configure --with-iconv=/usr/local
+make
+make install
+echo "extension=iconv.so" >> /etc/php5/conf.d/iconv.ini
+
 # Meminfo
-mkdir -p /opt
+
 cd /opt
 git clone https://github.com/BitOne/php-meminfo.git
 cd php-meminfo/extension
@@ -53,5 +82,6 @@ composer update
 ln -s /opt/php-meminfo/analyzer/bin/analyzer /sbin/analyzer
 
 # Cleanup
+
 rm -rf /tmp/*
 apk del re2c alpine-sdk php5-dev autoconf imagemagick-dev libtool zlib-dev pcre-dev openssl-dev tidyhtml-dev

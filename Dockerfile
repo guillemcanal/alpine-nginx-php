@@ -43,15 +43,7 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
     # Configure SSHD server
 
     && ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N '' -t rsa \
-    && sed -i "s/UsePrivilegeSeparation.*/UsePrivilegeSeparation no/g" /etc/ssh/sshd_config \
-    && sed -i "s/UsePAM.*/UsePAM no/g" /etc/ssh/sshd_config \
-    && sed -i "s/PermitRootLogin.*/PermitRootLogin yes/g" /etc/ssh/sshd_config \
-    && sed -i "s/#AuthorizedKeysFile/AuthorizedKeysFile/g" /etc/ssh/sshd_config \
-    && mkdir /root/.ssh \
-    && ssh-keygen -t rsa -N "" -f /root/.ssh/id_rsa \
-    && cp /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys \
-    && chmod 700 /root/.ssh \
-    && chmod 600 /root/.ssh/authorized_keys \
+    && echo -e "Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile=/dev/null\n" > /etc/ssh/ssh_config \
 
     # Create docker user
     
@@ -64,15 +56,15 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
     && php composer-setup.php --install-dir=/sbin --filename=composer \
     && php -r "unlink('composer-setup.php');" \
 
-    # Build extensions
-
-    && build-php-extensions \
-
     # Install S6
 
     && wget https://github.com/just-containers/s6-overlay/releases/download/v${S6VERSION}/s6-overlay-amd64.tar.gz -O /tmp/s6-overlay.tar.gz \
     && tar xvfz /tmp/s6-overlay.tar.gz -C / \
     && rm -f /tmp/s6-overlay.tar.gz \
+
+    # Build extensions
+
+    && build-php-extensions \
 
     ## Install global PHP utilities
 
@@ -80,17 +72,12 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
     && composer global require phing/phing \
     && composer global require sensiolabs/security-checker \
 
-    # SSH 
-
-    && echo -e "Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile=/dev/null\n" > /etc/ssh/ssh_config \
-
     # Cleanup
 
     && rm -r /var/www \
     && apk del wget \
     && rm -rf /var/cache/apk/* \
     && rm -rf /tmp/* \
-    && rm -rf /usr/share/* \
     && rm -rf /root/.composer/cache
 
 VOLUME ["/var/www"]
