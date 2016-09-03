@@ -13,12 +13,7 @@ ENV S6VERSION="1.17.2.0" \
     JAVA_HOME="/opt/jdk" \
     PATH="${PATH}:/opt/jdk/bin" \
     GLIBC_VERSION="2.23-r3" \
-    LANG="C.UTF-8" \
-    NODE_VERSION="v6.3.1" \
-    NPM_VERSION="3" \
-    NODE_CONFIG_FLAGS="--fully-static" \
-    NODE_DEL_PKGS="libgcc libstdc++" \
-    NODE_RM_DIRS="/usr/include"
+    LANG="C.UTF-8"
 
 COPY rootfs /
 
@@ -104,7 +99,6 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
     && apk del wget build-base ruby-dev libffi-dev \
     && rm -rf /var/cache/apk/* \
     && rm -rf /tmp/* \
-    # && rm -rf /usr/share/* \
     && rm -rf /root/.composer/cache \
 
 	# Install JAVA used to minify assets
