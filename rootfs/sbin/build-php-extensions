@@ -1,29 +1,26 @@
 #!/bin/sh
 
-apk add re2c alpine-sdk php5-dev autoconf libtool imagemagick-dev
+apk add re2c alpine-sdk php5-dev autoconf libtool tidyhtml-dev@testing tidyhtml-libs@testing
 
-pecl_install ()
-{
-  local EXT_TYPE=$1
-  local NAME=$2
-  local VERSION=$3
-  local CONFIGURE_ARGS=$(shift 3; echo $@)
-  local PECL_URL="https://pecl.php.net/get/$NAME-$VERSION.tgz"
+PHP_VERSION=$(php -r "print PHP_VERSION;")
 
-  cd /tmp
-  wget $PECL_URL
-  tar xzf $NAME-$VERSION.tgz || true
-  cd /tmp/$NAME-$VERSION
-  phpize
-  ./configure $CONFIGURE_ARGS
-  make
-  make install
-  echo "$EXT_TYPE=$NAME.so" >> /etc/php5/conf.d/$NAME.ini
-}
+# Download PHP source
 
-# Install PHP extensions
-pecl_install extension imagick 3.4.3RC1
+mkdir -p /opt
+cd /opt
+wget http://php.net/distributions/php-$PHP_VERSION.tar.gz
+tar xzf php-$PHP_VERSION.tar.gz
+
+# Install Tidy from source
+
+cd /opt/php-$PHP_VERSION/ext/tidy
+sed -i 's/buffio.h/tidybuffio.h/' *.c
+phpize
+./configure
+make
+make install
+echo "extension=tidy.so" >> /etc/php5/conf.d/tidy.ini
 
 # Cleanup
 rm -rf /tmp/*
-apk del re2c alpine-sdk php5-dev autoconf libtool
+apk del re2c alpine-sdk php5-dev autoconf libtool tidyhtml-dev
