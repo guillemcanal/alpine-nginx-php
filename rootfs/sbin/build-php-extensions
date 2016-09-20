@@ -57,8 +57,7 @@ make
 make install
 echo "extension=iconv.so" >> /etc/php5/conf.d/iconv.ini
 
-
 # Cleanup
 
 rm -rf /tmp/*
-apk del re2c alpine-sdk php5-dev autoconf imagemagick-dev libtool zlib-dev pcre-dev openssl-dev tidyhtml-dev
+apk del re2c alpine-sdk php5-dev autoconf imagemagick-dev libtool zlib-dev pcre-dev openssl-dev
