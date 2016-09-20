@@ -20,6 +20,7 @@ RUN apk add --update \
     php5-mcrypt \
     php5-dom \
     php5-opcache \
+    php5-ctype \
     php5-curl \
     git \
 
