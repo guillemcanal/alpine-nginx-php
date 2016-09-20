@@ -1,4 +1,4 @@
-FROM alpine:edge
+FROM alpine:3.4
 
 MAINTAINER Guillem CANAL <hello@guillem.ninja> 
 
@@ -7,31 +7,20 @@ ENV PATH=/.composer/vendor/bin:$PATH
 
 COPY rootfs /
 
-RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
-    && apk add --update \
+RUN apk add --update \
     wget \
     ca-certificates \
     openssh \
     nginx \
     php5-fpm \  
-    php5-gd \
-    php5-exif \
     php5-json \
-    php5-zlib \
-    php5-bz2 \
-    php5-bcmath \
     php5-xml \
-    php5-intl \
     php5-phar \
     php5-openssl \
     php5-mcrypt \
     php5-dom \
-    php5-ctype \
     php5-opcache \
-    php5-memcache \
     php5-curl \
-    su-exec \
-    bash \
     git \
 
     # Configure PHP
@@ -66,16 +55,11 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
 
     && build-php-extensions \
 
-    ## Install global PHP utilities
-
-    && composer global require friendsofphp/php-cs-fixer \
-    && composer global require phing/phing \
-    && composer global require sensiolabs/security-checker \
-
     # Cleanup
 
     && rm -r /var/www \
     && apk del wget \
+    && rm -rf /usr/share/* \
     && rm -rf /var/cache/apk/* \
     && rm -rf /tmp/* \
     && rm -rf /root/.composer/cache
