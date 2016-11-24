@@ -1,6 +1,6 @@
 FROM alpine:edge
 
-MAINTAINER Guillem CANAL <hello@guillem.ninja> 
+MAINTAINER Guillem CANAL <hello@guillem.ninja>
 
 ENV S6VERSION 1.17.2.0
 ENV PATH=/.composer/vendor/bin:$PATH
@@ -13,7 +13,7 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
     ca-certificates \
     openssh \
     nginx \
-    php5-fpm \  
+    php5-fpm \
     php5-gd \
     php5-exif \
     php5-json \
@@ -40,13 +40,8 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
     && echo "date.timezone=Europe/Paris" >> /etc/php5/conf.d/docker.ini \
     && echo -e "\n[XDebug]\nxdebug.idekey=\"docker\"\nxdebug.remote_enable=On\nxdebug.remote_connect_back=On\nxdebug.remote_autostart=Off" >> /etc/php5/conf.d/docker.ini \
 
-    # Configure SSHD server
-
-    && ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N '' -t rsa \
-    && echo -e "Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile=/dev/null\n" > /etc/ssh/ssh_config \
-
     # Create docker user
-    
+
     && adduser -u 1000 -D -s /bin/ash docker \
     && echo "docker:docker" | chpasswd \
 
@@ -80,9 +75,7 @@ RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/
     && rm -rf /tmp/* \
     && rm -rf /root/.composer/cache
 
-VOLUME ["/var/www"]
-
 # Expose the ports for nginx
-EXPOSE 80 443 22 9000
+EXPOSE 80 443
 
 ENTRYPOINT [ "/init" ]
